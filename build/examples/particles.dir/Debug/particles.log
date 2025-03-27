@@ -1,0 +1,6 @@
+﻿  Building Custom Rule E:/GitHub repos/OpenGL-Journey/examples/CMakeLists.txt
+  particles.c
+  tinycthread.c
+  getopt.c
+  Generating Code...
+  particles.vcxproj -> E:\GitHub repos\OpenGL-Journey\build\examples\Debug\particles.exe

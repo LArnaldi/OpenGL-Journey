@@ -1,0 +1,5 @@
+﻿  Building Custom Rule E:/GitHub repos/OpenGL-Journey/tests/CMakeLists.txt
+  threads.c
+  tinycthread.c
+  Generating Code...
+  threads.vcxproj -> E:\GitHub repos\OpenGL-Journey\build\tests\Debug\threads.exe
