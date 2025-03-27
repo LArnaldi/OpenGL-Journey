@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\GitHub repos\OpenGL-Journey\build\CMakeFiles\d0f8fa03d67bc069fff84f84809b0c7d\update_mappings.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="E:\GitHub repos\OpenGL-Journey\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="E:\GitHub repos\OpenGL-Journey\src\mappings.h.in">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="E:\GitHub repos\OpenGL-Journey\CMake\GenerateMappings.cmake" />
+    <None Include="E:\GitHub repos\OpenGL-Journey\build\src\CMakeFiles\update_mappings" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{65C7522F-2D06-3462-A7F8-3391F73B09A9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{6128FC3C-1B0B-3FA0-8C34-D0CE1CD7D545}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
