@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <Shader.h>
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -142,23 +143,7 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
-	unsigned int vertexShader = createVertexShader();
-
-	unsigned int fragmentShader = createFragmentShader();
-
-
-	if (vertexShader == NULL || fragmentShader == NULL)
-		return -1;
-
-
-	unsigned int shaderProgram = linkShaders(vertexShader, fragmentShader);
-	if (shaderProgram == NULL)
-		return -1;
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-
+	Shader()
 	float vertices[] = {
 	//positions			colors
 	 0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // top right
