@@ -2,9 +2,9 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-/* Be sure to include GLAD before GLFW. 
-	The include file for GLAD includes the required OpenGL headers behind the scenes (like GL/gl.h) 
-	so be sure to include GLAD before other header files that require OpenGL (like GLFW).
+/* ESERCIZIO 3
+* Create two shader programs where the second program uses a different fragment shader that outputs the color yellow; 
+* draw both triangles again where one outputs the color yellow: solution.
 */
 
 const unsigned int SCR_WIDTH = 800;
@@ -17,12 +17,20 @@ const char* vertexShaderSource = "#version 330 core\n"
 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 "}\0";
 
-const char* fragmentShaderSource = "#version 330 core\n"
+const char* fragmentShaderSourceA = "#version 330 core\n" 
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n" 
 "}\n\0";
+
+const char* fragmentShaderSourceB = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"   FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);\n" //YELLOW
+"}\n\0";
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -81,12 +89,14 @@ unsigned int createVertexShader()
 	return vertexShader;
 }
 
-unsigned int createFragmentShader() {
+unsigned int createFragmentShader(int index) {
 
 	unsigned int fragmentShader;
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	if(index == 0)
+		glShaderSource(fragmentShader, 1, &fragmentShaderSourceA, NULL);
+	else
+		glShaderSource(fragmentShader, 1, &fragmentShaderSourceB, NULL);
 	glCompileShader(fragmentShader);
 
 	if (!checkShaderCompiling(fragmentShader))
@@ -118,6 +128,7 @@ unsigned int linkShaders(unsigned int vertexShader, unsigned int fragmentShader)
 
 int main()
 {
+
 	//initialize glfw
 	glfwInit();
 
@@ -162,85 +173,64 @@ int main()
 	//creo il vertex shader
 	unsigned int vertexShader = createVertexShader();
 	//creo il fragment shader
-	unsigned int fragmentShader = createFragmentShader();
+	unsigned int fragmentShaderA = createFragmentShader(0);
+	unsigned int fragmentShaderB = createFragmentShader(1);
+
 
 	//combino i due shaderzzzz
-	if (vertexShader == NULL || fragmentShader == NULL)
+	if (vertexShader == NULL || fragmentShaderA == NULL || fragmentShaderB == NULL)
 		return -1;
 
 	//linkamo gli shaderz
-	unsigned int shaderProgram = linkShaders(vertexShader, fragmentShader);
-	if (shaderProgram == NULL)
+	unsigned int shaderProgramA = linkShaders(vertexShader, fragmentShaderA);
+	unsigned int shaderProgramB = linkShaders(vertexShader, fragmentShaderB);
+	if (shaderProgramA == NULL || shaderProgramB == NULL)
 		return -1;
 	//mo cancellamo li shader che nce serveno più visto che l'avemo linkatis
 	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	glDeleteShader(fragmentShaderA);
+	glDeleteShader(fragmentShaderB);
 
-	/* TRIANGOLO */
-	//er triangolo deve esse normalizzato, quindi x y z min -1.0f max +1.0f
-	//es:
-	//float vertices[] = { //mettemo le z a 0 cosi famo un triangolo con depth a 0 e quindi tipo in 2d dai
-	//-0.5f, -0.5f, 0.0f,
-	// 0.5f, -0.5f, 0.0f,
-	// 0.0f,  0.5f, 0.0f
-	//};
-	/* RETTANGOLO */
-	//usamo l'index rendering
-	float vertices[] = {
-	 0.5f,  0.5f, 0.0f,  // top right
-	 0.5f, -0.5f, 0.0f,  // bottom right
-	-0.5f, -0.5f, 0.0f,  // bottom left
-	-0.5f,  0.5f, 0.0f   // top left 
+	
+	float verticesA[] = { //mettemo le z a 0 cosi famo un triangolo con depth a 0 e quindi tipo in 2d dai
+	-0.9f, -0.9f, 0.0f,
+	 -0.45f, 0.9f, 0.0f,
+	 0.0f,  -0.9f, 0.0f
 	};
 
-	unsigned int indices[] = {
-		0, 1, 3,	//first triangle
-		1, 2, 3		//second triangle
+	float verticesB[] = {
+		0.0f, -0.9f, 0.0f,
+	 0.45f, 0.9f, 0.0f,
+	 0.9f,  -0.9f, 0.0f
 	};
-	//genero il vertex buffer object a cui passo tutti i dati possibili cosi che la gpu cha accesso a tutto velocemente
-	//creo er vertex array object, lo bindamo e ogni chiamata seguente sugli attributi vertex starà dentro sto VAO.
-	//quando configuriamo i pointer degli attributi vertex dovemo fa le chiamate solo na volta e quando volemo disegnalli
-	//questo rende lo switch tra vertex data e config di attributi semplice come bindare un nuovo VAO
-	//se er VAO non viè bindato bene, opengl disegna er cazzo
-	//EBO sarebbe nbuffer che cha indici che opengl usa pe decide quali vertici disegnare
-	unsigned int VBO, VAO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
 
-	//mo bindo il buffer, posso farlo con diversi tipi, e posso utilizza quanti buffer me pare a patto che siano de tipi differenti
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	unsigned int VBOs[2], VAOs[2];
+	glGenVertexArrays(2, VAOs);
+	glGenBuffers(2, VBOs);
 
+	glBindVertexArray(VAOs[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
 
-	//qua sto a mette i vertici nel buffer. je specifico er tipo de buffer, la grandezza der dato in byte, er dato, e il metodo de disegno
-	//metodi de disegno:
-	//1. GL_STREAM_DRAW: er dato è settato solo na vorta e vie usato dalla gpu npar de vorte
-	//2. GL_STATIC_DRAW: er dato è settato solo na vorta ma usato nbotto de vorte
-	//3. GL_DYNAMIC_DRAW: er dato cambia nbotto e vie usato nbotto de vorte
-	//all'element je passo l'indici perche ebo serve a punta ai dati de vbo
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesA), verticesA, GL_STATIC_DRAW);
 
-	//sapemo che nell'array de buffer del vertice ce stanno x y z, e so 3 vertici
-	//ogni coordinata so 32bit (4Byte), e i vertici nell'array so attaccati de seguito
-	//quindi er Byte 0-4 è ad esempio la x del primo vertice
-	//dovemo di ar puntatore de opengl come movese
-	//1: vertice co location 0, 2: size del vertex attribute (so 3 punti quindi 3), 3: So float, 4: lo stride, ovvero lo lo spazio tra tra attributi consecutivi
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	//pulimo er buffer mo che c'avemo tutto
-	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	// You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-	// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-	glBindVertexArray(0);
+
+	glBindVertexArray(VAOs[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesB), verticesB, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+
+
+
 
 	//questo serve per i wireframe se li volemo
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	
 	//finche' l'utente nun chiude 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -253,15 +243,19 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//usamo er programma
-		glUseProgram(shaderProgram);
+		glUseProgram(shaderProgramA);
 
 		//ribindamo vao cosi lo disegnamo
-		glBindVertexArray(VAO);
+		glBindVertexArray(VAOs[0]);
 
 		//se disegna
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		glUseProgram(shaderProgramB);
+		glBindVertexArray(VAOs[1]);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glBindVertexArray(0);
+
 		//vedemo npo se ce stanno cose che se triggerano e le famo partiii
 		glfwPollEvents();
 		//se swappano i bufferz
@@ -271,9 +265,10 @@ int main()
 	}
 
 	//se volemo deallocamo tutto
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteProgram(shaderProgram);
+	glDeleteVertexArrays(2, VAOs);
+	glDeleteBuffers(2, VBOs);
+	glDeleteProgram(shaderProgramA);
+	glDeleteProgram(shaderProgramB);
 	//fermite
 	glfwTerminate();
 	return 0;
