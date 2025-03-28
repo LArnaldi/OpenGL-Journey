@@ -20,9 +20,11 @@ const char* vertexShaderSource = "#version 330 core\n"
 const char* fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
 "in vec4 vertexColor;\n"
+"uniform vec4 ourColor;\n" //variabile globale, può essere usata sempre e da qualsiasi shader nel program, e si setta da opengl dajee
+//se lo uniform non viene mai utilizzato nel glsl, er compiler lo toglie e potrebbe rompe er cazzo sta cosaaaa
 "void main()\n"
 "{\n"
-"   FragColor = vertexColor;\n"
+"   FragColor = ourColor;\n"
 "}\0";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -104,7 +106,7 @@ unsigned int linkShaders(unsigned int vertexShader, unsigned int fragmentShader)
 		return NULL;
 
 	glUseProgram(shaderProgram);
-	
+
 	return shaderProgram;
 }
 
@@ -197,6 +199,14 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(shaderProgram);
+		//dopo che usamo er programma potemo setta gli uniform eddajeeee
+		//calcolamo er valore de verde, vedemo ndo sta er vertexColorLocation e usamo er program
+		float timeValue = glfwGetTime();
+		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+
+		//setto l'uniformolo
+		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
 		glBindVertexArray(VAO);
 
