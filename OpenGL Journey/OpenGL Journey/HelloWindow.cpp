@@ -86,7 +86,7 @@ int main()
 	 0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // top right
 	 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // bottom right
 	-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,// bottom left
-	-0.5f,  0.5f, 0.0f,  0.9f, 0.9f, 1.0f,// top left 
+	-0.5f,  0.5f, 0.0f,  0.0f, 1.0f, 0.0f,// top left 
 	};
 
 	unsigned int indices[] = {
@@ -130,10 +130,11 @@ int main()
 		//dopo che usamo er programma potemo setta gli uniform eddajeeee
 		//calcolamo er valore de verde, vedemo ndo sta er vertexColorLocation e usamo er program
 		// 
-		//float timeValue = glfwGetTime();
+		float timeValue = glfwGetTime();
 		//float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
 		//int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-
+		float alphaColor = (sin(timeValue) / 2.0f) + 0.5f;
+		ourShader.setFloat("alphaColor", alphaColor);
 		//setto l'uniformolo
 		// 
 		//glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
