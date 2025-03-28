@@ -6,28 +6,6 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-//creo na variabile output der colore, che se ha lo stesso tipo e nome de na variabile input dello shader a cui se linka, quell'input
-//se ritrova er valore dello shader prima che ha mandato in output
-//mo nfatti metto er colore nel vertex e lo pio in input nel fragment
-const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec4 aColor;\n"
-"out vec4 vertexColor;\n"
-"void main()\n"
-"{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"   vertexColor = aColor;\n"
-"}\0";
-
-const char* fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"in vec4 vertexColor;\n"
-//"uniform vec4 ourColor;\n" //variabile globale, può essere usata sempre e da qualsiasi shader nel program, e si setta da opengl dajee
-//se lo uniform non viene mai utilizzato nel glsl, er compiler lo toglie e potrebbe rompe er cazzo sta cosaaaa
-"void main()\n"
-"{\n"
-"   FragColor = vertexColor;\n"
-"}\0";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -69,48 +47,6 @@ bool checkProgramCompiling(unsigned int program) {
 	return success;
 }
 
-unsigned int createVertexShader()
-{
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-
-	if (!checkShaderCompiling(vertexShader))
-		return NULL;
-	return vertexShader;
-}
-
-unsigned int createFragmentShader() {
-
-	unsigned int fragmentShader;
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-
-	if (!checkShaderCompiling(fragmentShader))
-		return NULL;
-	return fragmentShader;
-}
-
-unsigned int linkShaders(unsigned int vertexShader, unsigned int fragmentShader) {
-
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	if (!checkProgramCompiling(shaderProgram))
-		return NULL;
-
-	glUseProgram(shaderProgram);
-
-	return shaderProgram;
-}
 
 int main()
 {
@@ -143,7 +79,8 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
-	Shader()
+	Shader ourShader("./Shaders/3.3.shader.vs", "./Shaders/3.3.shader.fs");
+
 	float vertices[] = {
 	//positions			colors
 	 0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // top right
@@ -188,7 +125,8 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(shaderProgram);
+		ourShader.use();
+
 		//dopo che usamo er programma potemo setta gli uniform eddajeeee
 		//calcolamo er valore de verde, vedemo ndo sta er vertexColorLocation e usamo er program
 		// 
@@ -199,6 +137,7 @@ int main()
 		//setto l'uniformolo
 		// 
 		//glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
 
 		glBindVertexArray(VAO);
 
@@ -215,7 +154,6 @@ int main()
 
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteProgram(shaderProgram);
 
 	glfwTerminate();
 	return 0;
