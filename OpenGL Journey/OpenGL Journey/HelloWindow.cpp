@@ -176,34 +176,52 @@ int main()
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
+	/* TRIANGOLO */
 	//er triangolo deve esse normalizzato, quindi x y z min -1.0f max +1.0f
 	//es:
-	float vertices[] = { //mettemo le z a 0 cosi famo un triangolo con depth a 0 e quindi tipo in 2d dai
-	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.0f,  0.5f, 0.0f
+	//float vertices[] = { //mettemo le z a 0 cosi famo un triangolo con depth a 0 e quindi tipo in 2d dai
+	//-0.5f, -0.5f, 0.0f,
+	// 0.5f, -0.5f, 0.0f,
+	// 0.0f,  0.5f, 0.0f
+	//};
+	/* RETTANGOLO */
+	//usamo l'index rendering
+	float vertices[] = {
+	 0.5f,  0.5f, 0.0f,  // top right
+	 0.5f, -0.5f, 0.0f,  // bottom right
+	-0.5f, -0.5f, 0.0f,  // bottom left
+	-0.5f,  0.5f, 0.0f   // top left 
 	};
 
+	unsigned int indices[] = {
+		0, 1, 3,	//first triangle
+		1, 2, 3		//second triangle
+	};
 	//genero il vertex buffer object a cui passo tutti i dati possibili cosi che la gpu cha accesso a tutto velocemente
 	//creo er vertex array object, lo bindamo e ogni chiamata seguente sugli attributi vertex starà dentro sto VAO.
 	//quando configuriamo i pointer degli attributi vertex dovemo fa le chiamate solo na volta e quando volemo disegnalli
 	//questo rende lo switch tra vertex data e config di attributi semplice come bindare un nuovo VAO
 	//se er VAO non viè bindato bene, opengl disegna er cazzo
-	unsigned int VBO, VAO;
+	//EBO sarebbe nbuffer che cha indici che opengl usa pe decide quali vertici disegnare
+	unsigned int VBO, VAO, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
 
 	//mo bindo il buffer, posso farlo con diversi tipi, e posso utilizza quanti buffer me pare a patto che siano de tipi differenti
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
 
 	//qua sto a mette i vertici nel buffer. je specifico er tipo de buffer, la grandezza der dato in byte, er dato, e il metodo de disegno
 	//metodi de disegno:
 	//1. GL_STREAM_DRAW: er dato è settato solo na vorta e vie usato dalla gpu npar de vorte
 	//2. GL_STATIC_DRAW: er dato è settato solo na vorta ma usato nbotto de vorte
 	//3. GL_DYNAMIC_DRAW: er dato cambia nbotto e vie usato nbotto de vorte
+	//all'element je passo l'indici perche ebo serve a punta ai dati de vbo
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	//sapemo che nell'array de buffer del vertice ce stanno x y z, e so 3 vertici
 	//ogni coordinata so 32bit (4Byte), e i vertici nell'array so attaccati de seguito
@@ -221,7 +239,7 @@ int main()
 	glBindVertexArray(0);
 
 	//questo serve per i wireframe se li volemo
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	//finche' l'utente nun chiude 
 	while (!glfwWindowShouldClose(window))
@@ -241,8 +259,9 @@ int main()
 		glBindVertexArray(VAO);
 
 		//se disegna
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
 		//vedemo npo se ce stanno cose che se triggerano e le famo partiii
 		glfwPollEvents();
 		//se swappano i bufferz
