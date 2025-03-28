@@ -19,7 +19,100 @@ void processInput(GLFWwindow* window)
 
 }
 
-void triangle(GLFWwindow* window)
+bool checkShaderCompiling(unsigned int shader) {
+	//controllo compilazione shader
+	int  success;
+	char infoLog[512];
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+
+	if (!success)
+	{
+		glGetShaderInfoLog(shader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+	return success;
+}
+
+bool checkProgramCompiling(unsigned int program) {
+	int  success;
+	char infoLog[512];
+	glGetProgramiv(program, GL_COMPILE_STATUS, &success);
+
+	if (!success)
+	{
+		glGetShaderInfoLog(program, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+	return success;
+}
+
+unsigned int createVertexShader()
+{
+	const char* vertexShaderSource = "#version 330 core\n"
+		"layout (location = 0) in vec3 aPos;\n"
+		"void main()\n"
+		"{\n"
+		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+		"}\0";
+
+	//creo come it il vertex shader e je dico a opengl che tipo de shader è
+	unsigned int vertexShader;
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+
+	//attacco il source allo shader e lo compilo
+	//1: shader, 2: quante stringhe passamo come sourcecode, 3: er source code, 4: array de lunghezze bo
+	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glCompileShader(vertexShader);
+
+	if (!checkShaderCompiling(vertexShader))
+		return NULL;
+	return vertexShader;
+}
+
+unsigned int createFragmentShader() {
+	const char* fragmentShaderSource = "#version 330 core\n"
+		"out vec4 FragColor;\n"
+		"void main()\n"
+		"{\n"
+		"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+		"}\0";
+
+	unsigned int fragmentShader;
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	
+	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glCompileShader(fragmentShader);
+
+	if (!checkShaderCompiling(fragmentShader))
+		return NULL;
+	return fragmentShader;
+}
+
+unsigned int linkShaders(unsigned int vertexShader, unsigned int fragmentShader) {
+
+	//creo un program che ce da un'id
+	unsigned int shaderProgram;
+	shaderProgram = glCreateProgram();
+
+	//attaccamo gli shader ar program e poi famo er link
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+	//controllamo se er link va bene
+	if (!checkProgramCompiling(shaderProgram))
+		return NULL;
+
+	//uso er program
+	//ogni shader e rendering call dopo l'uso del program, userà sto program e gli shader dentrolo
+	glUseProgram(shaderProgram);
+	
+	return shaderProgram;
+}
+
+int triangle(GLFWwindow* window)
 {
 	//er triangolo deve esse normalizzato, quindi x y z min -1.0f max +1.0f
 	//es:
@@ -42,7 +135,26 @@ void triangle(GLFWwindow* window)
 	//2. GL_STATIC_DRAW: er dato è settato solo na vorta ma usato nbotto de vorte
 	//3. GL_DYNAMIC_DRAW: er dato cambia nbotto e vie usato nbotto de vorte
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-}
+
+	//creo il vertex shader
+	unsigned int vertexShader = createVertexShader();
+
+	//creo il fragment shader
+	unsigned int fragmentShader = createFragmentShader();
+
+	//combino i due shaderzzzz
+	if (vertexShader == NULL || fragmentShader == NULL)
+		return -1;
+
+	//linkamo gli shaderz
+	unsigned int shaderProgram = linkShaders(vertexShader, fragmentShader);
+
+	//mo cancellamo li shader che nce serveno più visto che l'avemo linkatis
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+	
+	
+}	
 
 int main()
 {
@@ -98,7 +210,12 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		triangle(window);
+		int check = triangle(window);
+		if (check == -1) {
+			glfwTerminate();
+			return -1;
+		}
+
 		//vedemo npo se ce stanno cose che se triggerano e le famo partiii
 		glfwPollEvents();
 		//se swappano i bufferz
