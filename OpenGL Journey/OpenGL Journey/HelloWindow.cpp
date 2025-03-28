@@ -2,9 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-/* Be sure to include GLAD before GLFW. 
-	The include file for GLAD includes the required OpenGL headers behind the scenes (like GL/gl.h) 
-	so be sure to include GLAD before other header files that require OpenGL (like GLFW).
+/* ESERCIZIO 2
+* Now create the same 2 triangles using two different VAOs and VBOs for their data: solution.
 */
 
 const unsigned int SCR_WIDTH = 800;
@@ -176,67 +175,52 @@ int main()
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	/* TRIANGOLO */
-	//er triangolo deve esse normalizzato, quindi x y z min -1.0f max +1.0f
-	//es:
-	//float vertices[] = { //mettemo le z a 0 cosi famo un triangolo con depth a 0 e quindi tipo in 2d dai
-	//-0.5f, -0.5f, 0.0f,
-	// 0.5f, -0.5f, 0.0f,
-	// 0.0f,  0.5f, 0.0f
-	//};
-	/* RETTANGOLO */
-	//usamo l'index rendering
-	float vertices[] = {
-	 0.5f,  0.5f, 0.0f,  // top right
-	 0.5f, -0.5f, 0.0f,  // bottom right
-	-0.5f, -0.5f, 0.0f,  // bottom left
-	-0.5f,  0.5f, 0.0f   // top left 
+
+	float verticesA[] = { //mettemo le z a 0 cosi famo un triangolo con depth a 0 e quindi tipo in 2d dai
+	-0.9f, -0.9f, 0.0f,
+	 -0.45f, 0.9f, 0.0f,
+	 0.0f,  -0.9f, 0.0f
 	};
 
-	unsigned int indices[] = {
-		0, 1, 3,	//first triangle
-		1, 2, 3		//second triangle
+	float verticesB[] = { //mettemo le z a 0 cosi famo un triangolo con depth a 0 e quindi tipo in 2d dai
+	0.0f, -0.9f, 0.0f,
+	 0.45f, 0.9f, 0.0f,
+	 0.9f,  -0.9f, 0.0f
 	};
-	//genero il vertex buffer object a cui passo tutti i dati possibili cosi che la gpu cha accesso a tutto velocemente
-	//creo er vertex array object, lo bindamo e ogni chiamata seguente sugli attributi vertex starà dentro sto VAO.
-	//quando configuriamo i pointer degli attributi vertex dovemo fa le chiamate solo na volta e quando volemo disegnalli
-	//questo rende lo switch tra vertex data e config di attributi semplice come bindare un nuovo VAO
-	//se er VAO non viè bindato bene, opengl disegna er cazzo
-	//EBO sarebbe nbuffer che cha indici che opengl usa pe decide quali vertici disegnare
-	unsigned int VBO, VAO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+
+	
+	unsigned int VBOs[2], VAOs[2];
+	glGenVertexArrays(2, VAOs);
+	glGenBuffers(2, VBOs);
 
 	//mo bindo il buffer, posso farlo con diversi tipi, e posso utilizza quanti buffer me pare a patto che siano de tipi differenti
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBindVertexArray(VAOs[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
 
 
-	//qua sto a mette i vertici nel buffer. je specifico er tipo de buffer, la grandezza der dato in byte, er dato, e il metodo de disegno
-	//metodi de disegno:
-	//1. GL_STREAM_DRAW: er dato è settato solo na vorta e vie usato dalla gpu npar de vorte
-	//2. GL_STATIC_DRAW: er dato è settato solo na vorta ma usato nbotto de vorte
-	//3. GL_DYNAMIC_DRAW: er dato cambia nbotto e vie usato nbotto de vorte
-	//all'element je passo l'indici perche ebo serve a punta ai dati de vbo
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesA), verticesA, GL_STATIC_DRAW);
 
-	//sapemo che nell'array de buffer del vertice ce stanno x y z, e so 3 vertici
-	//ogni coordinata so 32bit (4Byte), e i vertici nell'array so attaccati de seguito
-	//quindi er Byte 0-4 è ad esempio la x del primo vertice
-	//dovemo di ar puntatore de opengl come movese
-	//1: vertice co location 0, 2: size del vertex attribute (so 3 punti quindi 3), 3: So float, 4: lo stride, ovvero lo lo spazio tra tra attributi consecutivi
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
 	glEnableVertexAttribArray(0);
 
-	//pulimo er buffer mo che c'avemo tutto
-	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	// You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-	// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+
 	glBindVertexArray(0);
+	glBindVertexArray(VAOs[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
+
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesB), verticesB, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(0);
+
 
 	//questo serve per i wireframe se li volemo
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -256,11 +240,14 @@ int main()
 		glUseProgram(shaderProgram);
 
 		//ribindamo vao cosi lo disegnamo
-		glBindVertexArray(VAO);
+		glBindVertexArray(VAOs[0]);
 
 		//se disegna
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		glBindVertexArray(VAOs[1]);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
 		glBindVertexArray(0);
 		//vedemo npo se ce stanno cose che se triggerano e le famo partiii
 		glfwPollEvents();
@@ -271,8 +258,8 @@ int main()
 	}
 
 	//se volemo deallocamo tutto
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	glDeleteVertexArrays(2, VAOs);
+	glDeleteBuffers(2, VBOs);
 	glDeleteProgram(shaderProgram);
 	//fermite
 	glfwTerminate();
