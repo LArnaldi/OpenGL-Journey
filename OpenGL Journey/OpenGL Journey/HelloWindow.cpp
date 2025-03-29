@@ -6,7 +6,10 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-
+/* ESERCIZIO 2
+*	Specify a horizontal offset via a uniform and move the triangle to the right side of the screen in the vertex shader 
+	using this offset value: solution.
+*/
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -83,28 +86,20 @@ int main()
 
 	float vertices[] = {
 	//positions			colors
-	 0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // top right
-	 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // bottom right
-	-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,// bottom left
-	-0.5f,  0.5f, 0.0f,  0.0f, 1.0f, 0.0f,// top left 
+	 -0.5f,  -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom left
+	 0.0f, 0.5f, 0.0f,  0.0f, 1.0f, 0.0f,	  // top center 
+	0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,	  // bottom right
 	};
 
-	unsigned int indices[] = {
-		0, 1, 3,	//first triangle
-		1, 2, 3		//second triangle
-	};
-
-	unsigned int VBO, VAO, EBO;
+	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -129,12 +124,14 @@ int main()
 
 		//dopo che usamo er programma potemo setta gli uniform eddajeeee
 		//calcolamo er valore de verde, vedemo ndo sta er vertexColorLocation e usamo er program
-		// 
+		
 		float timeValue = glfwGetTime();
 		//float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
 		//int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
 		float alphaColor = (sin(timeValue) / 2.0f) + 0.5f;
+		float sinXOffset = sin(timeValue)/2.0f;
 		ourShader.setFloat("alphaColor", alphaColor);
+		ourShader.setFloat("xOffset", sinXOffset);
 		//setto l'uniformolo
 		// 
 		//glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
@@ -142,7 +139,7 @@ int main()
 
 		glBindVertexArray(VAO);
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glBindVertexArray(0);
 
 		glfwPollEvents();
