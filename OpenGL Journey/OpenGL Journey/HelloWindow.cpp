@@ -107,6 +107,20 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
+
+	//Le coordinate texture non dipendono dalla sua grandezza infatti vanno sempre da 0,0 a 1,1.
+	//OpenGL a delle opzioni per il texture filtering cosi capisce quale texel serve pe mappa na coordinata texture precisa
+	//GL_NEAREST (nearest neighbor o point filtering) è quella de default, e opengl seleziona il texel il quale centro è
+	//il più vicino alla coordinata.
+	//GL_LINEAR (bilinear filtering) prende il valore interpolato dalle coordinate vicine, e approssima il colore.
+	//Meno è la distanza, più influenza ha il colore.
+	//Tutta sta roba serve soprattutto quando c'avemo na texture piccola e n'oggetto grande a cui applicarla
+	// GL_NEAREST se vedono de più i pixel
+	// GL_LINEAR se vedono de meno i pixel ma è tutto più smooth. Più realistico, ma è meglio GL_NEAREST per la roba 8bit like
+	//Il filtro può essere settato pe magnifying o minifying
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //se se scala - usamo nearest
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); //se se scala + usamo linear
 	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
