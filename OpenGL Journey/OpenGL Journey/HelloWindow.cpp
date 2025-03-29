@@ -120,7 +120,22 @@ int main()
 	//Il filtro può essere settato pe magnifying o minifying
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //se se scala - usamo nearest
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); //se se scala + usamo linear
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  //se se scala + usamo linear
+
+	//pe fa in modo che anche da lontano opengl riesca a vede bene le texture ad esempio in high res
+	//senza che smarmelli o che se usa troppa memoria, se usa er concetto de mipmaps
+	//le mipmaps so collezioni de img texture che so una la metà più piccola dell'altra
+	//l'idea è che a na certa distanza opengl deve swappa dalla textura A alla B con B=A/2
+	//opengl riesce a mipmappare le texture con glGenerateMipmap
+	// 
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	//glGeneratedMipmap(GL_TEXTURE_2D);
+
+	//pe non fa smarmella lo switch tra texture nella mipmap, se possono pure qua usa i filtri
+	//GL_NEAREST_MIPMAP_NEAREST: prende la mipmap più vicina pe matcha la grandezza dei pixel e fa interpolazione nearest
+	//GL_LINEAR_MIPMAP_NEAREST: prende la mipmap più vicina e fa interpolazione linear
+	//GL_NEAREST_MIPMAP_LINEAR: prende la mipmap con la grandezza de pixel e sampla i livelli linearmente interpolati col nearest
+	//GL_LINEAR_MIPMAP_LINEAR: prende la mipmap con la grandezza de pixel e sampla i livelli linearmente interpolati col linear
 	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
