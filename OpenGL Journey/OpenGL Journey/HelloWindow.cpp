@@ -6,6 +6,9 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+/* ESERCIZIO 1
+*	Adjust the vertex shader so that the triangle is upside down: solution. 
+*/
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -81,6 +84,7 @@ int main()
 
 	Shader ourShader("./Shaders/3.3.shader.vs", "./Shaders/3.3.shader.fs");
 
+	/*
 	float vertices[] = {
 	//positions			colors
 	 0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // top right
@@ -93,19 +97,27 @@ int main()
 		0, 1, 3,	//first triangle
 		1, 2, 3		//second triangle
 	};
+	*/
 
-	unsigned int VBO, VAO, EBO;
+	float vertices[] = {
+	 -0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,		// bottom left
+	 0.0f, 0.5f, 0.0f,  0.0f, 1.0f, 0.0f,		// top
+	 0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,		// bottom right
+	};
+
+	unsigned int VBO, VAO; //, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	//glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
@@ -141,8 +153,8 @@ int main()
 
 
 		glBindVertexArray(VAO);
-
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 		glfwPollEvents();

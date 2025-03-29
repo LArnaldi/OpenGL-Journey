@@ -1,3 +1,1 @@
-﻿  HelloWindow.cpp
-E:\GitHub repos\OpenGL-Journey\OpenGL Journey\OpenGL Journey\HelloWindow.cpp(133,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  OpenGL Journey.vcxproj -> E:\GitHub repos\OpenGL-Journey\OpenGL Journey\x64\Debug\OpenGL Journey.exe
+﻿  OpenGL Journey.vcxproj -> E:\GitHub repos\OpenGL-Journey\OpenGL Journey\x64\Debug\OpenGL Journey.exe
