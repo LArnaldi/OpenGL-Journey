@@ -83,10 +83,29 @@ int main()
 
 	float vertices[] = {
 	//positions			colors
-	 -0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom left
-	 0.0f, 0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // top center
-	0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,// bottom right
+	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
+	0.0f, 0.5f, 0.0f,   0.0f, 1.0f, 0.0f, // top center
+	0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f, // bottom right
 	};
+
+	//ogni texture ha coordinate da 0,0 a 1,1. Qua je stamo a quale coordinata della texture 
+	//cotrispondono i vertici der triangolo, sta roba se chiama texture sampling
+	float textCoords[] = {
+		0.0f, 0.0f, // lower-left corner
+		1.0f, 0.0f, // lower-right corner
+		0.0f, 1.0f  // top-center corner
+	};
+
+	//qua je dico come deve gesti le coordinate fuori il dominio 0,0 - 1,1.
+	//glTexParameter*
+	//1: texture target, 2: je dico qualle asse(x,y,z)->(s,t,r), 3:er modo
+	//i modi so:
+	//GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER
+	//se mettemo er border, je dovemo pure da er colore:
+	//float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+	//glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
 	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
