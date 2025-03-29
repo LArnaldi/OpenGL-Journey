@@ -136,6 +136,11 @@ int main()
 	//GL_LINEAR_MIPMAP_NEAREST: prende la mipmap più vicina e fa interpolazione linear
 	//GL_NEAREST_MIPMAP_LINEAR: prende la mipmap con la grandezza de pixel e sampla i livelli linearmente interpolati col nearest
 	//GL_LINEAR_MIPMAP_LINEAR: prende la mipmap con la grandezza de pixel e sampla i livelli linearmente interpolati col linear
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
 	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
