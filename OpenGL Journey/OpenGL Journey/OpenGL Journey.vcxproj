@@ -141,17 +141,18 @@
   <ItemGroup>
     <ClCompile Include="glad.c" />
     <ClCompile Include="HelloWindow.cpp" />
+    <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\stb_image.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\3.3.shader.fs" />
-    <None Include="Shaders\3.3.shader.vs" />
+    <None Include="Shaders\4.1.shader.fs" />
+    <None Include="Shaders\4.1.shader.vs" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Textures\wall.jpg" />
+    <Image Include="Resources\container.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
