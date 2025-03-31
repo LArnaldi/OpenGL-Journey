@@ -11,5 +11,5 @@ void main()
 {
     //la texture samplata se mette come colore
     //texture(sampler2D texture, vec2 coordinates)
-    FragColor = texture(ourTexture, TexCoord);
+    FragColor = texture(ourTexture, TexCoord) * vec4(ourColor, 1.0);
 }
