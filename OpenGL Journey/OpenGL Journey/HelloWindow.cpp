@@ -96,6 +96,7 @@ int main()
 		1, 2, 3  //second triangle
 	};
 
+	stbi_set_flip_vertically_on_load(true);
 	
 
 
@@ -145,10 +146,11 @@ int main()
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	//Come ogni cosa bisogna generalla e segna un id per il buffer della texture
-	unsigned int texture;
-	glGenTextures(1, &texture);
+	//famo 2 texture che con l'uniform possiamo associa piu texture a un modello daje
+	unsigned int texture1, texture2;
+	glGenTextures(1, &texture1);
 	//Poi se binda la texture all'id
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, texture1);
 
 	//qua je dico come deve gesti le coordinate fuori il dominio 0,0 - 1,1.
 	//glTexParameter*
@@ -181,7 +183,7 @@ int main()
 
 	//Importo la texture
 	int width, height, nrChannels;
-	unsigned char* data = stbi_load("Resources\container.jpg", &width, &height, &nrChannels, 0);
+	unsigned char *data = stbi_load("Resources\\container.jpg", &width, &height, &nrChannels, 0);
 
 	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -190,11 +192,33 @@ int main()
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
-		std::cout << "Failed to load texture" << std::endl;
+		std::cout << "Failed to load texture1" << std::endl;
 	}
-
 	//comunque, mo potemo libera la memoria togliendo la texture
 	stbi_image_free(data);
+
+	//lo rifamo pe la texture 2
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// load image, create texture and generate mipmaps
+	data = stbi_load("Resources\\awesomeface.png", &width, &height, &nrChannels, 0);
+
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		std::cout << "Failed to load texture2" << std::endl;
+	}
+
+	stbi_image_free(data);
+	
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -203,11 +227,14 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
 
 		ourShader.use();
-
+		glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); //manually
+		ourShader.setInt("texture2", 1);	//with out shader class
 		glBindVertexArray(VAO);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

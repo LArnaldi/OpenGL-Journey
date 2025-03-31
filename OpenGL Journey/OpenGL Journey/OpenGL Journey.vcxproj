@@ -152,6 +152,7 @@
     <None Include="Shaders\4.1.shader.vs" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Resources\awesomeface.png" />
     <Image Include="Resources\container.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
