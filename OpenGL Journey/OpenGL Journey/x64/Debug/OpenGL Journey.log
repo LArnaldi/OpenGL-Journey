@@ -1,2 +1,4 @@
 ﻿  HelloWindow.cpp
+E:\GitHub repos\OpenGL-Journey\OpenGL Journey\OpenGL Journey\HelloWindow.cpp(22,26): warning C4305: '+=': truncation from 'double' to 'float'
+E:\GitHub repos\OpenGL-Journey\OpenGL Journey\OpenGL Journey\HelloWindow.cpp(24,26): warning C4305: '-=': truncation from 'double' to 'float'
   OpenGL Journey.vcxproj -> E:\GitHub repos\OpenGL-Journey\OpenGL Journey\x64\Debug\OpenGL Journey.exe

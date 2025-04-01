@@ -7,6 +7,8 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+float textureMixAlpha = 0.5;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -16,6 +18,10 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && textureMixAlpha <= 1.0f)
+		textureMixAlpha += 0.01;
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && textureMixAlpha >= 0.0f)
+		textureMixAlpha -= 0.01;
 
 }
 
@@ -233,6 +239,7 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
 		ourShader.use();
+		ourShader.setFloat("textureMixAlpha", textureMixAlpha);
 		glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); //manually
 		ourShader.setInt("texture2", 1);	//with out shader class
 		glBindVertexArray(VAO);
