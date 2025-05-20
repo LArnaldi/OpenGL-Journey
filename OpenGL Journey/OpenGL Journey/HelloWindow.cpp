@@ -145,25 +145,17 @@ int main()
 	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 
-	unsigned int indices[] = {
-		0, 1, 3, //first triangle
-		1, 2, 3  //second triangle
-	};
-
 	stbi_set_flip_vertically_on_load(true);
 	
 	unsigned int VBO, VAO, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -239,7 +231,7 @@ int main()
 
 		//Creo un model matrix (lo ruoto cosi sembra che stia su un piano)
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f, 1.0f, 0.0f));
 
 		//Creo una view matrix (lo muovo avanto visto che anche la "camera" sta a 0,0,0, almeno lo vediamo, come se ci muovessimo indietro noi)
 		glm::mat4 view = glm::mat4(1.0f);
@@ -258,7 +250,13 @@ int main()
 		//unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
 		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		/*
+		* Così se vede na merda perchè opengl disegna un frag sopra all'altro.
+		* GLFW ci da di base uno z-buffer. Se il frag corrente è dietro a un'altro, viene scartato, altrimenti sovrascrive.
+		* Sta cosa si chiama depth testing e opengl la fa de base, dobbiamo abilitarla con glEnable
+		* Infatti glEnable e glDisable servono a gestire funzionalità di OpenGL
+		*/
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	
 
