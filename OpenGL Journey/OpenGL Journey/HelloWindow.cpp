@@ -222,26 +222,8 @@ int main()
 		projection = glm::perspective(glm::radians(45.0f), (float)(width / height), 0.1f, 100.0f);
 
 
-		glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-		glm::mat4 trans = glm::mat4(1.0f);
-
-		trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
-
-		vec = trans * vec;
-
-		std::cout << vec.x << vec.y << vec.z << std::endl;
-
-		
-		trans = glm::mat4(1.0f);
-		
-		trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-		trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
-
 		ourShader.use();
 
-		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
