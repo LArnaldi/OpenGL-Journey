@@ -218,7 +218,9 @@ int main()
 	}
 
 	stbi_image_free(data);
-	
+	ourShader.use();
+	ourShader.setInt("texture1", 0);
+	ourShader.setInt("texture2", 1);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -232,9 +234,6 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
-		ourShader.use();
-		glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); //manually
-		ourShader.setInt("texture2", 1);	//with out shader class
 		glBindVertexArray(VAO);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
