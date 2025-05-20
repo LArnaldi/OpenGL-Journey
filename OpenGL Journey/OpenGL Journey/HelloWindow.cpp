@@ -52,6 +52,21 @@ bool checkProgramCompiling(unsigned int program) {
 }
 
 
+/*
+* Dobbiamo trasformare le coordinate di un vertice in NDC (Normalized device coordinates), ma prima usiamo altri sistemi intermedi
+* che ci aiutano in operazioni e calcoli
+* I sistemi sono 5:
+*  - Local Space (Object Space)
+*  - World Space
+*  - View Space (Eye Space)
+*  - Clip Space
+*  - Screen Space
+* 
+* Le matrici transform per passare da uno spazio (sistema) all'altro sono in particolare la model, la view e la projection matrix.
+* Flow:
+* 
+* LOCAL SPACE -Model matrix-> WORLD SPACE -View Matrix-> VIEW SPACE -Projection Matrix-> CLIP SPACE :ViewportTransform:> SCREEN SPACE
+*/
 int main()
 {
 	glfwInit();
@@ -192,6 +207,19 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
 		glBindVertexArray(VAO);
+		
+
+		//Creo un model matrix (lo ruoto cosi sembra che stia su un piano)
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+		//Creo una view matrix (lo muovo avanto visto che anche la "camera" sta a 0,0,0, almeno lo vediamo, come se ci muovessimo indietro noi)
+		glm::mat4 view = glm::mat4(1.0f);
+		view = glm::translate(model, glm::vec3(0.0f, 0.0f, -3.0f));
+
+		//Creao la (perspective, ma esiste anche la ortho) projection matrix
+		glm::mat4 projection;
+		projection = glm::perspective(glm::radians(45.0f), (float)(width / height), 0.1f, 100.0f);
 
 
 		glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
@@ -217,13 +245,7 @@ int main()
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		//secondo container che scala nel tempo in alto a sinistra
-		ourShader.use();
-		trans = glm::mat4(1.0f);
-		trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
-		trans = glm::scale(trans, std::abs(glm::sin((float)glfwGetTime())) * glm::vec3(0.5, 0.5f, 0.5f));
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	
 
 
 
