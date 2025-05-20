@@ -4,6 +4,10 @@
 #include <Headers/Shader.h>
 #include <Headers/stb_image.h>
 
+#include <Headers/glm/glm.hpp>
+#include <Headers/glm/gtc/matrix_transform.hpp>
+#include <Headers/glm/gtc/type_ptr.hpp>
+
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
@@ -235,6 +239,8 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
 		glBindVertexArray(VAO);
+
+
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
