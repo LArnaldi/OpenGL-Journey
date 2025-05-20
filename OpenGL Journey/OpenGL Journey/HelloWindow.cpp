@@ -255,6 +255,9 @@ int main()
 		//2. Ruotiamo e scaliamo la mat transform e la moltiplicheremo nello shader per trasformare i vertici e ruotare e scalare il quadrato
 		trans = glm::mat4(1.0f);
 		//trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); proviamo nel tempo
+
+		//Attenzione all'ordine! Quando si ruota, si ruota anche il basis, quindi se si trasla dopo, si segue la direzione del nuovo basis!
+		trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
 		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 		trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
 
@@ -264,6 +267,17 @@ int main()
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		//secondo container che scala nel tempo in alto a sinistra
+		ourShader.use();
+		trans = glm::mat4(1.0f);
+		trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
+		trans = glm::scale(trans, std::abs(glm::sin((float)glfwGetTime())) * glm::vec3(0.5, 0.5f, 0.5f));
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+
 		glBindVertexArray(0);
 
 		glfwPollEvents();
