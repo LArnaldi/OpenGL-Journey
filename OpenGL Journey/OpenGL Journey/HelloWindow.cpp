@@ -240,7 +240,28 @@ int main()
 
 		glBindVertexArray(VAO);
 
+		//prima di disegnare, facciamo una trasform
 
+		//1. Vediamo come si trasla un vec 1,0,0 di 1,1,0 rendendolo 2,1,0
+		glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+		glm::mat4 trans = glm::mat4(1.0f);
+
+		trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
+
+		vec = trans * vec;
+
+		std::cout << vec.x << vec.y << vec.z << std::endl;
+
+		//2. Ruotiamo e scaliamo la mat transform e la moltiplicheremo nello shader per trasformare i vertici e ruotare e scalare il quadrato
+		trans = glm::mat4(1.0f);
+		//trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)); proviamo nel tempo
+		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
+
+		ourShader.use();
+
+		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
